@@ -12,7 +12,7 @@ A free tool that turns your input into a ready-to-use AI prompt using proven pro
 - 10 prompt patterns loaded from `data/templates.json`
 - Input checks for empty fields, length and blocked phrases
 - Copy, Save, Export (.txt and .md) and History
-- Dark mode
+- Dark interface
 - Works offline after the first load; nothing you type is sent to a server
 
 ## Run it locally
