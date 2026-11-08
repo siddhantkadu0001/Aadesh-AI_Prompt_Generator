@@ -11,6 +11,16 @@ function setMessage(text, isError = false) {
   el.className = isError ? "message error" : "message";
 }
 
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  $("themeToggle").textContent = theme === "dark" ? "Light mode" : "Dark mode";
+  try {
+    localStorage.setItem("apg_theme", theme);
+  } catch {
+    /* storage may be blocked; the theme still changes */
+  }
+}
+
 // Creates one input box for each variable of the selected pattern.
 function renderFields() {
   const pattern = templates.patterns[$("pattern").value];
@@ -81,6 +91,19 @@ async function copyPrompt() {
 }
 
 async function init() {
+  // Theme first, so dark mode works even if the templates fail to load.
+  let savedTheme = "light";
+  try {
+    savedTheme = localStorage.getItem("apg_theme") || "light";
+  } catch {
+    /* ignore */
+  }
+  applyTheme(savedTheme);
+  $("themeToggle").addEventListener("click", () => {
+    const current = document.documentElement.getAttribute("data-theme");
+    applyTheme(current === "dark" ? "light" : "dark");
+  });
+
   try {
     const res = await fetch("data/templates.json");
     templates = await res.json();
