@@ -1,182 +1,88 @@
-:root {
-  --bg: #08080a;
-  --panel: rgba(255, 255, 255, 0.04);
-  --border: rgba(255, 255, 255, 0.14);
-  --border-strong: rgba(255, 255, 255, 0.28);
-  --text: #f4f4f6;
-  --muted: #a0a0ac;
-  --error: #ff8a80;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Prompt Generator</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <svg class="brand-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 2.5 20 7v10l-8 4.5L4 17V7z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+        <circle cx="12" cy="12" r="2.4" fill="currentColor" />
+      </svg>
+      <span>Prompt Generator</span>
+    </div>
+    <nav class="nav" aria-label="Sections">
+      <a href="#generator">Generator</a>
+      <a href="#result">Result</a>
+      <a href="#history">History</a>
+    </nav>
+  </header>
 
-* { box-sizing: border-box; }
+  <section class="hero">
+    <h1>AI Prompt<br />Generator</h1>
+    <p class="subtitle">Pick a pattern, fill the fields, get a ready-to-use prompt</p>
+    <span class="hero-line"></span>
+  </section>
 
-html { color-scheme: dark; scroll-behavior: smooth; }
+  <main class="flow">
+    <section class="card" id="generator">
+      <div class="card-head">
+        <span class="badge">1</span>
+        <h2>Choose &amp; fill</h2>
+      </div>
 
-body {
-  margin: 0;
-  min-height: 100vh;
-  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  line-height: 1.55;
-  color: var(--text);
-  background:
-    radial-gradient(1100px 560px at 85% -10%, rgba(255, 255, 255, 0.08), transparent 60%),
-    radial-gradient(900px 500px at -10% 35%, rgba(255, 255, 255, 0.05), transparent 60%),
-    radial-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px) 0 0 / 24px 24px,
-    var(--bg);
-}
+      <label for="pattern">Prompt pattern</label>
+      <select id="pattern"></select>
+      <p id="patternDescription" class="muted"></p>
 
-::selection { background: rgba(255, 255, 255, 0.25); }
+      <div id="fields"></div>
 
-/* ---------- Header ---------- */
-.top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 24px 20px 0;
-}
-.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.15rem; }
-.brand-icon { width: 30px; height: 30px; }
-.nav { display: flex; gap: 22px; }
-.nav a { color: var(--muted); text-decoration: none; font-size: 0.92rem; }
-.nav a:hover { color: var(--text); }
+      <label for="systemOverride">System prompt (optional)</label>
+      <input type="text" id="systemOverride" placeholder="Leave empty to use the default" />
 
-/* ---------- Hero ---------- */
-.hero { max-width: 900px; margin: 0 auto; padding: 56px 20px 36px; }
-.hero h1 {
-  margin: 0;
-  font-size: clamp(2.6rem, 8vw, 4.4rem);
-  line-height: 1.02;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-}
-.subtitle { margin: 18px 0 0; font-size: clamp(1.05rem, 2.6vw, 1.3rem); color: #cfcfd8; }
-.hero-line { display: block; width: 56px; height: 2px; margin-top: 26px; background: var(--text); }
+      <div class="actions">
+        <button id="generateBtn" type="button">Generate &rarr;</button>
+      </div>
+      <p id="message" class="message" role="status"></p>
+    </section>
 
-/* ---------- Flow of cards ---------- */
-.flow { max-width: 900px; margin: 0 auto; padding: 0 20px 16px; }
+    <section class="card" id="result">
+      <div class="card-head">
+        <span class="badge">2</span>
+        <h2>Your prompt</h2>
+      </div>
 
-.card {
-  position: relative;
-  margin-bottom: 30px;
-  padding: 22px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
-}
+      <label for="output">Generated prompt (you can edit it)</label>
+      <textarea id="output" rows="12" placeholder="Your prompt will appear here"></textarea>
 
-/* thin connector line and dot between cards */
-.card + .card::before {
-  content: "";
-  position: absolute;
-  top: -31px;
-  left: 40px;
-  width: 1px;
-  height: 30px;
-  background: var(--border-strong);
-}
-.card + .card::after {
-  content: "";
-  position: absolute;
-  top: -35px;
-  left: 36px;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--text);
-  opacity: 0.7;
-}
+      <label for="systemOutput">System prompt</label>
+      <textarea id="systemOutput" rows="2" readonly></textarea>
 
-.card-head { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
-.card-head h2 { margin: 0; font-size: 1.15rem; font-weight: 700; }
-.badge {
-  display: inline-grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border: 1px solid var(--border-strong);
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.06);
-  font-weight: 700;
-  font-size: 0.95rem;
-}
+      <p id="temperature" class="muted"></p>
 
-/* ---------- Form ---------- */
-label {
-  display: block;
-  margin: 16px 0 6px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
+      <div class="actions">
+        <button id="copyBtn" type="button">Copy</button>
+        <button id="saveBtn" class="secondary" type="button">Save</button>
+        <button id="exportTxtBtn" class="secondary" type="button">Export .txt</button>
+        <button id="exportMdBtn" class="secondary" type="button">Export .md</button>
+      </div>
+    </section>
 
-textarea, select, input[type="text"] {
-  width: 100%;
-  padding: 12px 14px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--text);
-  font: inherit;
-}
-textarea { resize: vertical; }
-textarea::placeholder, input::placeholder { color: #70707c; }
-select option { background: #15151a; color: var(--text); }
+    <section class="card" id="history">
+      <div class="card-head">
+        <span class="badge">3</span>
+        <h2>History</h2>
+      </div>
+      <div id="historyList"></div>
+    </section>
+  </main>
 
-textarea:focus-visible, select:focus-visible, input:focus-visible {
-  outline: none;
-  border-color: #ffffff;
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.14);
-}
+  <footer class="muted">Everything runs in your browser. Nothing you type is sent to a server.</footer>
 
-/* ---------- Buttons ---------- */
-.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
-
-button {
-  padding: 11px 22px;
-  border: 1px solid #ffffff;
-  border-radius: 999px;
-  background: #ffffff;
-  color: #0a0a0c;
-  font: inherit;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.12s ease, background 0.12s ease;
-}
-button:hover { transform: translateY(-1px); }
-button.secondary { background: transparent; color: var(--text); border-color: var(--border-strong); }
-button.secondary:hover { background: rgba(255, 255, 255, 0.08); }
-button:focus-visible { outline: 3px solid rgba(255, 255, 255, 0.4); outline-offset: 2px; }
-
-/* ---------- Text helpers ---------- */
-.message { min-height: 1.4em; margin: 12px 0 0; font-size: 0.92rem; }
-.message.error { color: var(--error); }
-.muted { color: var(--muted); }
-
-/* ---------- History ---------- */
-.history-item {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  margin-top: 10px;
-  padding: 10px 12px;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.03);
-}
-.history-item strong { flex: 1; font-weight: 500; word-break: break-word; }
-.history-item button { padding: 7px 14px; font-size: 0.88rem; }
-
-footer { max-width: 900px; margin: 0 auto; padding: 8px 20px 40px; font-size: 0.85rem; }
-
-@media (max-width: 600px) {
-  .nav { display: none; }
-  .hero { padding-top: 40px; }
-  .card { padding: 18px; }
-  .history-item { flex-wrap: wrap; }
-}
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
