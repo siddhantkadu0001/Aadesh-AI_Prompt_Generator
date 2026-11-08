@@ -8,6 +8,8 @@ A free tool that turns your input into a ready-to-use AI prompt using proven pro
 3. Click **Generate** to get the finished prompt, a system prompt and a recommended temperature.
 4. Copy it, save it to history, or export it as .txt or .md.
 
+## visit
+https://siddhantkadu0001.github.io/Aadesh-AI_Prompt_Generator/
 ## Features
 - 10 prompt patterns loaded from `data/templates.json`
 - Input checks for empty fields, length and blocked phrases
